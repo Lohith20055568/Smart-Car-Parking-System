@@ -28,3 +28,24 @@ def _load_yolo():
         return _yolo_model
     except Exception:
         return None
+
+
+def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
+    model = _load_yolo()
+    if model is None:
+        return []
+    results = model(frame, verbose=False, conf=0.35)
+    detections = []
+    for r in results:
+        names = r.names
+        for b in r.boxes:
+            cls_name = names[int(b.cls[0])]
+            if cls_name in VEHICLE_CLASSES:
+                x1, y1, x2, y2 = map(int, b.xyxy[0].tolist())
+                detections.append({
+                    'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+                    'class_name': cls_name,
+                    'confidence': float(b.conf[0])
+                })
+    return detections
+
