@@ -132,3 +132,17 @@ def update_slot_status(slots: List[Dict], detections: List[Dict], iou_threshold:
     }
     return updated, summary
 
+
+def draw_results(frame: np.ndarray, slots: List[Dict], detections: List[Dict]) -> np.ndarray:
+    output = cv2.resize(frame.copy(), (640, 520))
+    for det in detections:
+        cv2.rectangle(output, (det['x1'], det['y1']), (det['x2'], det['y2']), (255, 255, 0), 2)
+        cv2.putText(output, det['class_name'], (det['x1'], max(20, det['y1'] - 8)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
+    for slot in slots:
+        color = (0, 0, 255) if slot.get('status') == 'occupied' else (0, 180, 0)
+        cv2.rectangle(output, (slot['x1'], slot['y1']), (slot['x2'], slot['y2']), color, 3)
+        label = f"{slot['slot_id']} {slot.get('status', 'unknown')}"
+        cv2.putText(output, label, (slot['x1'], slot['y1'] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+    return output
+
+
