@@ -17,3 +17,14 @@ def calculate_iou(box_a: Dict, box_b: Dict) -> float:
     area_a = max(1, (box_a['x2'] - box_a['x1']) * (box_a['y2'] - box_a['y1']))
     area_b = max(1, (box_b['x2'] - box_b['x1']) * (box_b['y2'] - box_b['y1']))
     return inter / float(area_a + area_b - inter)
+
+def _load_yolo():
+    global _yolo_model
+    if _yolo_model is not None:
+        return _yolo_model
+    try:
+        from ultralytics import YOLO
+        _yolo_model = YOLO('yolov8n.pt')
+        return _yolo_model
+    except Exception:
+        return None
