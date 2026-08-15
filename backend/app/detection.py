@@ -49,3 +49,51 @@ def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
                 })
     return detections
 
+
+def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
+    """Lightweight fallback detector for demos when YOLO is unavailable.
+    It finds large vehicle-like objects using contours and works on sample/static parking images.
+    """
+    resized = cv2.resize(frame, (640, 520))
+
+    # Dashboard diagrams often contain empty parking bays drawn as large white
+    # rectangles.  Edge/contour detection alone treats those outlines as cars.
+    # First look for solid, coloured vehicle bodies; this correctly handles the
+    # bundled parking-diagram sample without turning every bay into a vehicle.
+    hsv = cv2.cvtColor(resized, cv2.COLOR_BGR2HSV)
+    colour_mask = cv2.inRange(hsv, (5, 70, 35), (179, 255, 245))
+    colour_mask = cv2.morphologyEx(colour_mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    contours, _ = cv2.findContours(colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    colour_detections = []
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        area = w * h
+        if 1500 <= area <= 30000 and 0.45 <= w / max(1, h) <= 2.5:
+            colour_detections.append({
+                'x1': int(x), 'y1': int(y), 'x2': int(x + w), 'y2': int(y + h),
+                'class_name': 'vehicle_like_object', 'confidence': 0.60
+            })
+    if colour_detections:
+        return colour_detections
+
+    gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    edges = cv2.Canny(blur, 40, 120)
+    kernel = np.ones((9, 9), np.uint8)
+    closed = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
+    contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    detections = []
+    for c in contours:
+        x, y, w, h = cv2.boundingRect(c)
+        area = w * h
+        aspect = w / max(1, h)
+        # Thin rectangular outlines are parking bays, not vehicles.  Requiring
+        # a reasonably filled contour prevents those false positives.
+        fill_ratio = cv2.contourArea(c) / max(1, area)
+        if 2800 <= area <= 70000 and 0.55 <= aspect <= 3.2 and fill_ratio >= 0.35:
+            detections.append({
+                'x1': int(x), 'y1': int(y), 'x2': int(x + w), 'y2': int(y + h),
+                'class_name': 'vehicle_like_object', 'confidence': 0.55
+            })
+    return detections
+
