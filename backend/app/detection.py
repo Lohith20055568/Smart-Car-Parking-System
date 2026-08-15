@@ -97,3 +97,11 @@ def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
             })
     return detections
 
+
+def detect_vehicles(frame: np.ndarray) -> List[Dict]:
+    if USE_YOLO:
+        yolo_detections = detect_vehicles_yolo(frame)
+        if yolo_detections:
+            return yolo_detections
+    return detect_vehicles_opencv(frame)
+
