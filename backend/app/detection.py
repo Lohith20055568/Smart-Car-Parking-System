@@ -105,3 +105,30 @@ def detect_vehicles(frame: np.ndarray) -> List[Dict]:
             return yolo_detections
     return detect_vehicles_opencv(frame)
 
+def update_slot_status(slots: List[Dict], detections: List[Dict], iou_threshold: float = 0.15) -> Tuple[List[Dict], Dict]:
+    updated = []
+    occupied = 0
+    for slot in slots:
+        best_iou = 0.0
+        best_detection = None
+        for det in detections:
+            val = calculate_iou(slot, det)
+            if val > best_iou:
+                best_iou = val
+                best_detection = det
+        row = dict(slot)
+        row['iou'] = round(best_iou, 3)
+        row['status'] = 'occupied' if best_iou >= iou_threshold else 'vacant'
+        row['matched_class'] = best_detection['class_name'] if best_detection else None
+        if row['status'] == 'occupied':
+            occupied += 1
+        updated.append(row)
+    summary = {
+        'total_slots': len(slots),
+        'occupied_slots': occupied,
+        'vacant_slots': max(0, len(slots) - occupied),
+        'vehicle_count': len(detections),
+        'occupancy_rate': round((occupied / len(slots)) * 100, 2) if slots else 0
+    }
+    return updated, summary
+
