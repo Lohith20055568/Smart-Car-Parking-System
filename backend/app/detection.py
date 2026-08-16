@@ -24,7 +24,7 @@ def _load_yolo():
         return _yolo_model
     try:
         from ultralytics import YOLO
-        _yolo_model = YOLO('yolov8n.pt')
+        _yolo_model = YOLO('yolo11n.pt')
         return _yolo_model
     except Exception:
         return None
