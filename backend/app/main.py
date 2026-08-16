@@ -152,7 +152,7 @@ async def detect_video(file: UploadFile = File(...)):
     stderr=subprocess.DEVNULL,
     check=False
 )
-        )
+        
         if converted.returncode != 0 or not os.path.exists(processed_video_path):
             processed_video_path = raw_video_path
     if latest_slots is not None:
