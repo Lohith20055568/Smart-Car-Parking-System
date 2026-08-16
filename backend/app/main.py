@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import subprocess
+import imageio_ffmpeg
 from typing import List
 from bson import ObjectId
 import cv2
@@ -111,7 +112,7 @@ async def detect_video(file: UploadFile = File(...)):
         if not ok:
             break
         frame = cv2.resize(frame, (640, 520))
-        if frame_index % 15 == 0:
+        if frame_index % 30 == 0:
             latest_detections_list = detect_vehicles(frame)
             updated_slots, summary = update_slot_status(get_slots(), latest_detections_list)
             latest_slots = updated_slots
@@ -134,10 +135,23 @@ async def detect_video(file: UploadFile = File(...)):
     if video_writer is not None:
         video_writer.release()
         converted = subprocess.run(
-            ['ffmpeg', '-y', '-i', raw_video_path, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', processed_video_path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=False
+    [
+        imageio_ffmpeg.get_ffmpeg_exe(),
+        "-y",
+        "-i",
+        raw_video_path,
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        processed_video_path
+    ],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+    check=False
+)
         )
         if converted.returncode != 0 or not os.path.exists(processed_video_path):
             processed_video_path = raw_video_path
@@ -156,11 +170,12 @@ async def detect_video(file: UploadFile = File(...)):
         'result_video': os.path.basename(processed_video_path) if video_writer is not None else None
     }
     saved = save_detection(record)
-    return {
-        'record': saved,
-        'result_url': f'/api/result/{os.path.basename(out_path)}' if best_output is not None else None,
-        'result_video_url': f'/api/video-result/{os.path.basename(processed_video_path)}' if video_writer is not None else None
-    }
+  return {
+    'record': saved,
+    'slots': latest_slots,
+    'result_url': f'/api/result/{os.path.basename(out_path)}' if best_output is not None else None,
+    'result_video_url': f'/api/video-result/{os.path.basename(processed_video_path)}' if video_writer is not None else None
+}
 
 @app.get('/api/result/{filename}')
 def result_file(filename: str):
