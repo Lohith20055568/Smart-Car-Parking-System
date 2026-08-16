@@ -2,7 +2,6 @@ import os
 import cv2
 import subprocess
 import imageio_ffmpeg
-from datetime import datetime
 from typing import List
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -18,18 +17,11 @@ from .database import (
 from .detection import detect_vehicles, update_slot_status, draw_results
 
 
-app = FastAPI(
-    title="Smart Car Parking Detection API",
-    version="1.0.0"
-)
-
-origins = ["*"] if CORS_ORIGINS == "*" else [
-    x.strip() for x in CORS_ORIGINS.split(",")
-]
+app = FastAPI(title="Smart Car Parking Detection API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"] if CORS_ORIGINS == "*" else CORS_ORIGINS.split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,10 +53,7 @@ def root():
 
 @app.get("/api/health")
 def health():
-    return {
-        "status": "ok",
-        "database": "memory" if using_memory() else "mongodb"
-    }
+    return {"status": "ok"}
 
 
 @app.get("/api/slots")
@@ -81,98 +70,101 @@ def replace_slots(slots: List[Slot]):
 def detections():
     return {"detections": latest_detections(30)}
 
+
+# IMAGE
 @app.post("/api/detect/image")
 async def detect_image(file: UploadFile = File(...)):
 
-    if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(400, "Please upload an image file")
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(400, "Please upload an image")
 
-    name = datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
-    input_path = os.path.join(UPLOAD_DIR, f"{name}_{file.filename}")
-    output_path = os.path.join(UPLOAD_DIR, f"{name}_result.jpg")
+    name = f"image_{file.filename}"
+    path = os.path.join(UPLOAD_DIR, name)
+    result = os.path.join(UPLOAD_DIR, f"result_{name}.jpg")
 
-    with open(input_path, "wb") as f:
+    with open(path, "wb") as f:
         f.write(await file.read())
 
-    frame = cv2.imread(input_path)
-
+    frame = cv2.imread(path)
     if frame is None:
-        raise HTTPException(400, "Could not read image")
+        raise HTTPException(400, "Invalid image")
 
     frame = cv2.resize(frame, (640, 520))
-
     vehicles = detect_vehicles(frame)
     slots, summary = update_slot_status(get_slots(), vehicles)
-    slots = upsert_slots(slots)
 
-    cv2.imwrite(
-        output_path,
-        draw_results(frame, slots, vehicles)
-    )
+    upsert_slots(slots)
+    cv2.imwrite(result, draw_results(frame, slots, vehicles))
 
     record = save_detection({
         "source_type": "image",
         "filename": file.filename,
         "detections": vehicles,
         "slots": slots,
-        "summary": summary,
-        "result_image": os.path.basename(output_path)
+        "summary": summary
     })
 
     return {
         "record": record,
-        "result_url": f"/api/result/{os.path.basename(output_path)}"
+        "result_url": f"/api/result/{os.path.basename(result)}"
     }
 
+
+# VIDEO
 @app.post("/api/detect/video")
 async def detect_video(file: UploadFile = File(...)):
 
-    if not file.content_type or not file.content_type.startswith("video/"):
-        raise HTTPException(400, "Please upload a video file")
+    if not file.content_type.startswith("video/"):
+        raise HTTPException(400, "Please upload a video")
 
-    name = datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
-    input_path = os.path.join(UPLOAD_DIR, f"{name}_{file.filename}")
-    temp_path = os.path.join(UPLOAD_DIR, f"{name}_temp.mp4")
-    output_path = os.path.join(UPLOAD_DIR, f"{name}_result.mp4")
+    name = f"video_{file.filename}"
+    path = os.path.join(UPLOAD_DIR, name)
+    temp = os.path.join(UPLOAD_DIR, f"temp_{name}")
+    result = os.path.join(UPLOAD_DIR, f"result_{name}")
 
-    with open(input_path, "wb") as f:
+    with open(path, "wb") as f:
         f.write(await file.read())
 
-    cap = cv2.VideoCapture(input_path)
+    cap = cv2.VideoCapture(path)
 
     if not cap.isOpened():
-        raise HTTPException(400, "Could not read video")
+        raise HTTPException(400, "Invalid video")
 
     fps = cap.get(cv2.CAP_PROP_FPS) or 20
+
     writer = cv2.VideoWriter(
-        temp_path,
+        temp,
         cv2.VideoWriter_fourcc(*"mp4v"),
         fps,
-        (640, 520)
+        (512, 416)
     )
 
     slots = get_slots()
     vehicles = []
     summaries = []
-    frame_count = 0
+    frame = 0
 
     while True:
 
-        ok, frame = cap.read()
+        ok, image = cap.read()
 
         if not ok:
             break
 
-        frame = cv2.resize(frame, (640, 520))
+        image = cv2.resize(image, (512, 416))
 
-        if frame_count % 15 == 0:
-            vehicles = detect_vehicles(frame)
+        # Detection every 30 frames for faster processing
+        if frame % 30 == 0:
+            vehicles = detect_vehicles(image)
             slots, summary = update_slot_status(slots, vehicles)
-            summary["frame_index"] = frame_count
+            summary["frame_index"] = frame
             summaries.append(summary)
 
-        writer.write(draw_results(frame, slots, vehicles))
-        frame_count += 1
+        writer.write(
+            draw_results(image, slots, vehicles)
+        )
+
+        frame += 1
 
     cap.release()
     writer.release()
@@ -182,17 +174,17 @@ async def detect_video(file: UploadFile = File(...)):
 
     subprocess.run([
         ffmpeg, "-y",
-        "-i", temp_path,
+        "-i", temp,
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
         "-movflags", "+faststart",
-        output_path
+        result
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    if os.path.exists(temp_path):
-        os.remove(temp_path)
+    if os.path.exists(temp):
+        os.remove(temp)
 
-    slots = upsert_slots(slots)
+    upsert_slots(slots)
 
     occupancy = round(
         sum(x["occupancy_rate"] for x in summaries) /
@@ -202,25 +194,26 @@ async def detect_video(file: UploadFile = File(...)):
     record = save_detection({
         "source_type": "video",
         "filename": file.filename,
-        "frames_analyzed": frame_count,
+        "frames_analyzed": frame,
         "average_occupancy_rate": occupancy,
-        "frame_summaries": summaries,
-        "result_video": os.path.basename(output_path)
+        "frame_summaries": summaries
     })
 
     return {
         "record": record,
+        "slots": slots,
         "result_video_url":
-            f"/api/video-result/{os.path.basename(output_path)}"
+            f"/api/video-result/{os.path.basename(result)}"
     }
 
+
 @app.get("/api/result/{filename}")
-def result_file(filename: str):
+def result(filename: str):
 
     path = os.path.join(UPLOAD_DIR, filename)
 
     if not os.path.exists(path):
-        raise HTTPException(404, "Result file not found")
+        raise HTTPException(404, "Result not found")
 
     return FileResponse(path, media_type="image/jpeg")
 
@@ -231,6 +224,6 @@ def video_result(filename: str):
     path = os.path.join(UPLOAD_DIR, filename)
 
     if not os.path.exists(path):
-        raise HTTPException(404, "Result video not found")
+        raise HTTPException(404, "Video not found")
 
     return FileResponse(path, media_type="video/mp4")
