@@ -9,4 +9,4 @@ pydantic==2.10.4
 pillow==11.0.0
 imageio-ffmpeg==0.6.0
 # Optional: uncomment locally for real YOLO inference. Render free tier may be slow.
-# ultralytics==8.3.49
+ultralytics==8.3.49
