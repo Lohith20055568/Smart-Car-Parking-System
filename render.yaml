@@ -10,7 +10,7 @@ services:
       - key: DATABASE_NAME
         value: smart_parking
       - key: USE_YOLO
-        value: false
+        value: true
       - key: CORS_ORIGINS
         value: "*"
       - key: MONGO_URI
