@@ -29,7 +29,6 @@ def _load_yolo():
     except Exception:
         return None
 
-
 def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
     model = _load_yolo()
     if model is None:
@@ -48,7 +47,6 @@ def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
                     'confidence': float(b.conf[0])
                 })
     return detections
-
 
 def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
     """Lightweight fallback detector for demos when YOLO is unavailable.
@@ -97,7 +95,6 @@ def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
             })
     return detections
 
-
 def detect_vehicles(frame: np.ndarray) -> List[Dict]:
     if USE_YOLO:
         yolo_detections = detect_vehicles_yolo(frame)
@@ -132,7 +129,6 @@ def update_slot_status(slots: List[Dict], detections: List[Dict], iou_threshold:
     }
     return updated, summary
 
-
 def draw_results(frame: np.ndarray, slots: List[Dict], detections: List[Dict]) -> np.ndarray:
     output = cv2.resize(frame.copy(), (640, 520))
     for det in detections:
@@ -144,5 +140,4 @@ def draw_results(frame: np.ndarray, slots: List[Dict], detections: List[Dict]) -
         label = f"{slot['slot_id']} {slot.get('status', 'unknown')}"
         cv2.putText(output, label, (slot['x1'], slot['y1'] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
     return output
-
 
