@@ -4,7 +4,7 @@ import {Car,Upload,Database,Activity} from "lucide-react";
 import {BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer} from "recharts";
 import "./style.css";
 
-const API=import.meta.env.VITE_API_URL||"http://localhost:8000";
+const API = import.meta.env.VITE_API_URL || 'https://smart-car-parking-backend.onrender.com';
 
 function App(){
   const [file,setFile]=useState(null);
