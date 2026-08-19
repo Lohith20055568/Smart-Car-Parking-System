@@ -2,9 +2,8 @@ import React,{useEffect,useState} from "react";
 import {createRoot} from "react-dom/client";
 import {Car,Upload,Database,Activity} from "lucide-react";
 import {BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer} from "recharts";
-import "./style.css";
 
-const API = import.meta.env.VITE_API_URL || 'https://smart-car-parking-backend.onrender.com';
+const API = import.meta.env.VITE_API_URL || "https://smart-car-parking-backend.onrender.com";
 
 function App(){
   const [file,setFile]=useState(null);
