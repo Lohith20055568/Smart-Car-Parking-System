@@ -203,17 +203,17 @@ def evaluate():
 
     # Save results
 
-    with open(
-        "evaluation_results.json",
-        "w"
-    ) as f:
+RESULT = os.path.join(
+    ROOT,
+    "evaluation_results.json"
+)
 
-        json.dump(
-            result,
-            f,
-            indent=2
-        )
-
+with open(RESULT, "w") as f:
+    json.dump(
+        result,
+        f,
+        indent=2
+    )
 
     # Save confusion matrix
 
