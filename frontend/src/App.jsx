@@ -142,7 +142,7 @@ function App(){
     </div>
 
     <div className="panel">
-      <h2>Model Evaluation (PKLot)</h2>
+      <h2>Model Evaluation</h2>
 
       <div className="cards">
         <Card label="Accuracy" value="65.38%"/>
