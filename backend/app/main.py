@@ -158,14 +158,14 @@ async def detect_video(file: UploadFile = File(...)):
     video_writer = None
     frame_index = 0
 
-    while frame_index < 90:
+    while frame_index < 60:
         ok, frame = cap.read()
         if not ok:
             break
 
         frame = cv2.resize(frame, (640, 520))
 
-        if frame_index % 15 == 0:
+        if frame_index % 20 == 0:
             latest_detections_list = detect_vehicles(frame)
             updated_slots, summary = update_slot_status(
                 get_slots(), latest_detections_list
@@ -180,10 +180,8 @@ async def detect_video(file: UploadFile = File(...)):
                 frame, updated_slots, latest_detections_list
             )
 
-        if latest_slots is not None:
-            annotated_frame = draw_results(
-                frame, latest_slots, latest_detections_list
-            )
+       if latest_slots is not None:
+    annotated_frame = best_output if best_output is not None else frame
 
             if video_writer is None:
                 video_writer = cv2.VideoWriter(
