@@ -5,6 +5,7 @@ from typing import List
 from bson import ObjectId
 import cv2
 import time
+import json
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -59,13 +60,16 @@ def health():
 
 @app.get('/api/evaluation')
 def evaluation():
-    return {
-        "accuracy": 65.38,
-        "precision": 48.03,
-        "recall": 2.44,
-        "f1_score": 4.64,
-        "mean_iou": 0.031
-    }
+
+    path = "evaluation_results.json"
+
+    if not os.path.exists(path):
+        return {
+            "message": "Evaluation not completed yet"
+        }
+
+    with open(path) as f:
+        return json.load(f)
 
 @app.get('/api/slots')
 def slots():
