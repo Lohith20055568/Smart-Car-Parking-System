@@ -10,9 +10,5 @@ numpy==2.1.3
 pydantic==2.10.4
 pillow==11.0.0
 
-# YOLO11 vehicle detection
-ultralytics==8.3.49
-
-# Evaluation metrics
 scikit-learn==1.6.1
 matplotlib==3.10.0
