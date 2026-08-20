@@ -1,20 +1,32 @@
 from datetime import datetime
+import json
 import os
 import subprocess
+import time
 from typing import List
 from bson import ObjectId
 import cv2
-import time
-import json
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from .config import CORS_ORIGINS, UPLOAD_DIR
-from .database import seed_slots, get_slots, upsert_slots, save_detection, latest_detections, using_memory
-from .detection import detect_vehicles, update_slot_status, draw_results
+from .database import (
+    get_slots,
+    latest_detections,
+    save_detection,
+    seed_slots,
+    upsert_slots,
+    using_memory,
+)
+
+from .detection import (
+    detect_vehicles,
+    update_slot_status,
+    draw_results,
+)
 
 app = FastAPI(
     title='Smart Car Parking Detection API',
@@ -60,7 +72,6 @@ def health():
 
 @app.get('/api/evaluation')
 def evaluation():
-
     path = os.path.join(
         os.path.dirname(__file__),
         "../evaluation_results.json"
@@ -179,9 +190,8 @@ async def detect_video(file: UploadFile = File(...)):
             best_output = draw_results(
                 frame, updated_slots, latest_detections_list
             )
-
-          if latest_slots is not None:
-        annotated_frame = best_output if best_output is not None else frame
+            
+        annotated_frame = best_output if (latest_slots is not None and best_output is not None) else frame
 
         if video_writer is None:
             video_writer = cv2.VideoWriter(
@@ -192,17 +202,6 @@ async def detect_video(file: UploadFile = File(...)):
             )
 
         video_writer.write(annotated_frame)
-
-            if video_writer is None:
-                video_writer = cv2.VideoWriter(
-                    raw_video_path,
-                    cv2.VideoWriter_fourcc(*'mp4v'),
-                    30,
-                    (640, 520)
-                )
-
-            video_writer.write(annotated_frame)
-
         frame_index += 1
 
     cap.release()
