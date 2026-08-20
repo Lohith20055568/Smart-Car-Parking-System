@@ -7,7 +7,6 @@ import "./style.css";
 const API=import.meta.env.VITE_API_URL||"http://localhost:8000";
 
 function App(){
-
 const [file,setFile]=useState(null);
 const [result,setResult]=useState(null);
 const [slots,setSlots]=useState([]);
@@ -31,7 +30,6 @@ useEffect(()=>{load()},[]);
 
 const detect=async(type)=>{
 if(!file)return alert("Please select image or video");
-
 setLoading(true);
 setResult(null);
 setVideoSlots([]);
@@ -64,28 +62,14 @@ const frames=result?.record?.frame_summaries||[];
 if(!frames.length)return;
 
 const frame=Math.floor(e.currentTarget.currentTime*30);
+const current=frames.filter(x=>x.frame_index<=frame).at(-1);
 
-const current=frames.filter(
-x=>x.frame_index<=frame
-).at(-1);
-
-if(current?.slots)
-setVideoSlots(current.slots);
+if(current?.slots)setVideoSlots(current.slots);
 };
 
 const shownSlots=videoSlots.length?videoSlots:slots;
-
-const occupied=shownSlots.filter(
-s=>s.status==="occupied"
-).length;
-
-const vacant=shownSlots.filter(
-s=>s.status==="vacant"
-).length;
-
-const occupancy=shownSlots.length?
-Math.round(occupied/shownSlots.length*100)+"%":
-"0%";
+const occupied=shownSlots.filter(s=>s.status==="occupied").length;
+const vacant=shownSlots.filter(s=>s.status==="vacant").length;
 
 const chart=shownSlots.map(s=>({
 slot:s.slot_id,
@@ -96,91 +80,65 @@ const stats=[
 [<Car/>,"Total Slots",shownSlots.length],
 [<Activity/>,"Occupied",occupied],
 [<Upload/>,"Vacant",vacant],
-[<Database/>,"Occupancy",occupancy]
+[<Database/>,"Occupancy",shownSlots.length?Math.round(occupied/shownSlots.length*100)+"%":"0%"]
 ];
 
 const metrics=[
-["Accuracy",evaluation.Accuracy+"%"],
-["Precision",evaluation.Precision+"%"],
-["Recall",evaluation.Recall+"%"],
-["F1 Score",evaluation.F1+"%"],
-["FPS",evaluation.FPS],
-["Latency",evaluation.Latency_ms+" ms"]
+["Accuracy",evaluation.Accuracy!==undefined?evaluation.Accuracy+"%":"N/A"],
+["Precision",evaluation.Precision!==undefined?evaluation.Precision+"%":"N/A"],
+["Recall",evaluation.Recall!==undefined?evaluation.Recall+"%":"N/A"],
+["F1 Score",evaluation.F1!==undefined?evaluation.F1+"%":"N/A"],
+["FPS",evaluation.FPS??"N/A"],
+["Latency",evaluation.Latency_ms!==undefined?evaluation.Latency_ms+" ms":"N/A"]
 ];
 
 return(
 <div className="page">
+
 <h1>Smart Car Parking Detection System</h1>
 
 <div className="cards">
-{stats.map((s,i)=>
-<Card key={i} icon={s[0]} label={s[1]} value={s[2]}/>
-)}
+{stats.map((s,i)=><Card key={i} icon={s[0]} label={s[1]} value={s[2]}/>)}
 </div>
 
 <div className="result-grid">
 
 <div className="panel">
+
 <h2>Upload Image / Video</h2>
 
-<input
-type="file"
-accept="image/*,video/*"
-onChange={e=>setFile(e.target.files[0])}
-/>
+<input type="file" accept="image/*,video/*" onChange={e=>setFile(e.target.files[0])}/>
 
-<button onClick={()=>detect("image")}>
-Detect Image
-</button>
-
-<button onClick={()=>detect("video")}>
-Detect Video
-</button>
+<button onClick={()=>detect("image")}>Detect Image</button>
+<button onClick={()=>detect("video")}>Detect Video</button>
 
 {loading&&<p>Processing...</p>}
 
 <h2>Detected Result</h2>
 
-{
-result?.result_video_url?
-<video
-className="result"
-controls
-onTimeUpdate={videoUpdate}
-src={`${API}${result.result_video_url}`}
-/>
+{result?.result_video_url?
+<video className="result" controls onTimeUpdate={videoUpdate} src={`${API}${result.result_video_url}`}/>
 :
 result?.result_url?
-<img
-className="result"
-src={`${API}${result.result_url}`}
-alt="Detected"
-/>
-:null
-}
+<img className="result" src={`${API}${result.result_url}`} alt="Detected"/>
+:null}
 
 </div>
-  </div>
 
+  </div>
 
 <div className="panel">
 
 <h2>Parking Slot Status</h2>
 
 <div className="slotGrid">
-
 {shownSlots.map(s=>
-<div
-className={`slot ${s.status}`}
-key={s.slot_id}
->
+<div className={`slot ${s.status}`} key={s.slot_id}>
 <b>{s.slot_id}</b>
 <span>{s.status}</span>
 </div>
 )}
-
 </div>
-
 
 <h2>Occupancy Graph</h2>
 
@@ -203,15 +161,9 @@ key={s.slot_id}
 <h2>Model Evaluation</h2>
 
 <div className="cards">
-
 {metrics.map((m,i)=>
-<Card
-key={i}
-label={m[0]}
-value={m[1]==="undefined%"?"N/A":m[1]}
-/>
+<Card key={i} label={m[0]} value={m[1]}/>
 )}
-
 </div>
 
 </div>
@@ -235,19 +187,11 @@ value={m[1]==="undefined%"?"N/A":m[1]}
 
 {history.map((h,i)=>
 <tr key={i}>
-
 <td>{h.source_type}</td>
-
 <td>{h.filename}</td>
-
 <td>
-{
-h.summary?.occupancy_rate ??
-h.average_occupancy_rate ??
-0
-}%
+{h.summary?.occupancy_rate??h.average_occupancy_rate??0}%
 </td>
-
 </tr>
 )}
 
@@ -259,24 +203,17 @@ h.average_occupancy_rate ??
 
 </div>
 );
-
 }
 
 
 function Card({icon,label,value}){
-
 return(
 <div className="card">
-
 {icon}
-
 <span>{label}</span>
-
 <b>{value}</b>
-
 </div>
 );
-
 }
 
 
