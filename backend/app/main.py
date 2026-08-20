@@ -176,7 +176,7 @@ async def detect_video(file: UploadFile = File(...)):
 
         frame = cv2.resize(frame, (640, 520))
 
-        if frame_index % 20 == 0:
+        if frame_index % 15 == 0:
             latest_detections_list = detect_vehicles(frame)
             updated_slots, summary = update_slot_status(
                 get_slots(), latest_detections_list
