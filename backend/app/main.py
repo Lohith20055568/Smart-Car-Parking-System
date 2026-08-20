@@ -61,7 +61,10 @@ def health():
 @app.get('/api/evaluation')
 def evaluation():
 
-    path = "evaluation_results.json"
+    path = os.path.join(
+        os.path.dirname(__file__),
+        "../evaluation_results.json"
+    )
 
     if not os.path.exists(path):
         return {
