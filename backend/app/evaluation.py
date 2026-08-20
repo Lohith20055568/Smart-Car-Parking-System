@@ -2,7 +2,15 @@ import json, os, time, cv2
 from .detection import detect_vehicles, calculate_iou
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-DATA = os.path.join(ROOT, "datasets/PKLot")
+DATASETS = {
+
+    "PKLot":
+    os.path.join(ROOT,"datasets/PKLot"),
+
+    "CNRPark-EXT":
+    os.path.join(ROOT,"datasets/CNRPark-EXT")
+
+}
 ANN = os.path.join(DATA, "annotations.json")
 IMG = os.path.join(DATA, "images copy")
 
