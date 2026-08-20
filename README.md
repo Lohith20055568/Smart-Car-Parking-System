@@ -59,22 +59,19 @@ Open:
 http://localhost:5173
 ```
 
-## Local Run With Docker
+##Render Deployment files 
 
-```bash
-docker compose up --build
-```
 
 Frontend:
 
 ```text
-http://localhost:5173
+https://smart-parking-frontend-7mey.onrender.com
 ```
 
 Backend:
 
 ```text
-http://localhost:8000/docs
+https://smart-car-parking-backend.onrender.com
 ```
 
 ## MongoDB Setup
