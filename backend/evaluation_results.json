@@ -1,0 +1,13 @@
+{
+  "TP": 0,
+  "TN": 0,
+  "FP": 0,
+  "FN": 0,
+  "Accuracy": 0,
+  "Precision": 0,
+  "Recall": 0,
+  "F1": 0,
+  "IoU": 0,
+  "Latency_ms": 0,
+  "FPS": 0
+}
