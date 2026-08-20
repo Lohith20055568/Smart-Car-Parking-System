@@ -1,0 +1,144 @@
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f7fb;
+}
+
+.page{
+    padding:30px;
+}
+
+
+h1{
+    color:#132238;
+}
+
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    margin-bottom:20px;
+}
+
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    box-shadow:0 5px 15px #ddd;
+}
+
+
+.card span{
+    font-size:16px;
+}
+
+
+.card b{
+    font-size:32px;
+}
+
+
+
+
+.panel{
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:20px;
+}
+
+
+
+
+button{
+    background:#1769d2;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    margin:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+
+button:hover{
+    background:#0d55ae;
+}
+
+
+
+
+.result-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+
+
+.result{
+    width:100%;
+    max-height:400px;
+    object-fit:contain;
+    border-radius:10px;
+}
+
+
+
+
+.slotGrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+
+.slot{
+    padding:20px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+}
+
+
+.slot.occupied{
+    background:#ffdede;
+}
+
+
+.slot.vacant{
+    background:#dcffe3;
+}
+
+
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+
+td,th{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+}
+
+
+
+@media(max-width:900px){
+
+.cards{
+    grid-template-columns:1fr 1fr;
+}
+
+
+.result-grid{
+    grid-template-columns:1fr;
+}
+
+}

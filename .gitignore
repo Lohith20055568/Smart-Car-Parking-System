@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+__pycache__/
+*.pyc
+
+backend/uploads/
+frontend/dist/
+
+.DS_Store

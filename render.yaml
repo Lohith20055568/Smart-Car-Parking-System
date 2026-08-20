@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: smart-parking-backend
+    env: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_NAME
+        value: smart_parking
+      - key: USE_YOLO
+        value: false
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: MONGO_URI
+        sync: false
+  - type: web
+    name: smart-parking-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
