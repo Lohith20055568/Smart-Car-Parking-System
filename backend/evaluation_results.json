@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "TP": 0,
   "TN": 0,
   "FP": 0,
@@ -11,3 +12,17 @@
   "Latency_ms": 0,
   "FPS": 0
 }
+=======
+  "TP": 366,
+  "TN": 4697,
+  "FP": 48,
+  "FN": 2139,
+  "Accuracy": 69.83,
+  "Precision": 88.41,
+  "Recall": 14.61,
+  "F1": 25.08,
+  "IoU": 0.031,
+  "Latency_ms": 96.01,
+  "FPS": 10.42
+}
+>>>>>>> a548bfe (Add evaluation metrics results)
