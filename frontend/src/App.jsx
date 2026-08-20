@@ -66,7 +66,7 @@ const current=frames.filter(x=>x.frame_index<=frame).at(-1);
 
 if(current?.slots)setVideoSlots(current.slots);
 };
-
+  
 const shownSlots=videoSlots.length?videoSlots:slots;
 const occupied=shownSlots.filter(s=>s.status==="occupied").length;
 const vacant=shownSlots.filter(s=>s.status==="vacant").length;
@@ -125,8 +125,6 @@ result?.result_url?
 
 </div>
 
-  </div>
-
 <div className="panel">
 
 <h2>Parking Slot Status</h2>
@@ -152,10 +150,7 @@ result?.result_url?
 </ResponsiveContainer>
 
 </div>
-
 </div>
-
-
 <div className="panel">
 
 <h2>Model Evaluation</h2>
