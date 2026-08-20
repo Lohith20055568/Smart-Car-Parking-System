@@ -180,8 +180,18 @@ async def detect_video(file: UploadFile = File(...)):
                 frame, updated_slots, latest_detections_list
             )
 
-       if latest_slots is not None:
-    annotated_frame = best_output if best_output is not None else frame
+          if latest_slots is not None:
+        annotated_frame = best_output if best_output is not None else frame
+
+        if video_writer is None:
+            video_writer = cv2.VideoWriter(
+                raw_video_path,
+                cv2.VideoWriter_fourcc(*'mp4v'),
+                30,
+                (640, 520)
+            )
+
+        video_writer.write(annotated_frame)
 
             if video_writer is None:
                 video_writer = cv2.VideoWriter(
