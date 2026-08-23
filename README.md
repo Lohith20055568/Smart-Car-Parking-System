@@ -42,7 +42,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 Open backend API:
 
 ```text
-http://localhost:8000/docs
+https://smart-car-parking-system-6snu.onrender.com/docs
 ```
 
 ### Frontend
