@@ -33,7 +33,7 @@ def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
     model = _load_yolo()
     if model is None:
         return []
-    results = model(frame, verbose=False, conf=0.35)
+    results = model(frame, verbose=False, conf=0.20, imgsz=960)
     detections = []
     for r in results:
         names = r.names
