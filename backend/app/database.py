@@ -14,6 +14,7 @@ _memory = {
     "events": []
 }
 
+#https://martinfowler.com/bliki/CacheAside.html
 
 def clean_doc(doc):
     if isinstance(doc, list):
@@ -31,6 +32,7 @@ def clean_doc(doc):
 
     return doc
 
+#https://realpython.com/python-recursion/
 
 def get_db():
     global _client, _db
@@ -65,6 +67,12 @@ def get_db():
         print("MongoDB connection failed:", e)
         return None
 
+  #https://pymongo.readthedocs.io/en/stable
+  #https://www.mongodb.com/docs/languages/python/pymongo-driver/current
+  #https://realpython.com/introduction-to-mongodb-and-python
+  #https://github.com/mongodb/mongo-python-driver
+  #https://www.geeksforgeeks.org/mongodb-indexes
+  #https://realpython.com/python-recursion
 
 def using_memory():
     return get_db() is None
@@ -92,6 +100,9 @@ def seed_slots():
 
     return clean_doc(list(db.slots.find({}, {"_id": 0})))
 
+#https://www.tutorialspoint.com/mongodb/mongodb_python.htm
+#https://www.mongodb.com/docs/manual/data-modeling
+#https://www.geeksforgeeks.org/mongodb-indexes
 
 def get_slots():
     db = get_db()
@@ -125,6 +136,9 @@ def upsert_slots(slots):
         list(db.slots.find({}, {"_id": 0}))
     )
 
+    #https://realpython.com/python-recursion
+    #https://docs.python.org/3/library/copy.html
+    #https://docs.python.org/3/library/datetime.html
 
 def save_detection(record):
     record["created_at"] = datetime.utcnow()
@@ -149,6 +163,9 @@ def save_detection(record):
 
     return clean_doc(record)
 
+#https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/query
+#https://docs.python.org/3/library/copy.html
+
 
 def latest_detections(limit=20):
     db = get_db()
@@ -170,3 +187,5 @@ def latest_detections(limit=20):
     )
 
     return clean_doc(rows)
+
+#https://fastapi.tiangolo.com/tutorial/encoder/
