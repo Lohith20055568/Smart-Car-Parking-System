@@ -111,8 +111,9 @@ def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
 #References from https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
 #https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
 #https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
-#https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html'
-#https://numpy.org/doc/stable/
+#https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html
+#https://numpy.org/doc/stable
+#https://www.geeksforgeeks.org/python/python-opencv-morphological-operations
 
 def detect_vehicles(frame: np.ndarray) -> List[Dict]:
     if USE_YOLO:
