@@ -9,6 +9,8 @@ DATA=os.path.join(ROOT,"datasets/PKLot")\
 ANN=os.path.join(DATA,"annotations.json")\
 IMG=os.path.join(DATA,"images copy")
 
+#https://web.inf.ufpr.br/vri/databases/parking-lot-database
+
 def inside(slot,v):\
 cx=(v["x1"]+v["x2"])/2\
 cy=(v["y1"]+v["y2"])/2\
@@ -52,6 +54,11 @@ for iid,name in imgs.items():
         yp.append(occupied)
         ious.append(best)
 
+    #https://cocodataset.org/#format-data
+    #https://github.com/cocodataset/cocoapi
+    #https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html
+    #https://docs.ultralytics.com/tasks/detect
+
 cm=confusion_matrix(y,yp)
 tn,fp,fn,tp=cm.ravel()
 latency=sum(times)/len(times) if times else 0
@@ -78,3 +85,9 @@ with open(os.path.join(ROOT,"evaluation_results.json"),"w") as f:
 
 if **name**=="**main**":\
 evaluate()
+
+#https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection
+#https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
+#https://docs.python.org/3/library/time.html#time.perf_counter
+#https://learnopencv.com/how-to-find-frame-rate-or-frames-per-second-fps-in-opencv-python-cpp
+#https://docs.python.org/3/library/json.html
