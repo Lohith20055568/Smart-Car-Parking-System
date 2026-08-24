@@ -31,9 +31,9 @@ def _load_yolo():
 
 #References from https://docs.ultralytics.com 
 #https://github.com/ultralytics/ultralytics
-#https://docs.opencv.org/
-#https://docs.ultralytics.com/usage/python/
-#https://docs.ultralytics.com/tasks/detect/
+#https://docs.opencv.org
+#https://docs.ultralytics.com/usage/python
+#https://docs.ultralytics.com/tasks/detect
 
 
 def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
@@ -164,6 +164,6 @@ def draw_results(frame: np.ndarray, slots: List[Dict], detections: List[Dict]) -
         cv2.putText(output, label, (slot['x1'], slot['y1'] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
     return output
 
-#https://fastapi.tiangolo.com/
-#https://pymongo.readthedocs.io/
+#https://fastapi.tiangolo.com
+#https://pymongo.readthedocs.io
 
