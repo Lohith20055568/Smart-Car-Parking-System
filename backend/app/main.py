@@ -146,9 +146,9 @@ async def detect_image(file: UploadFile = File(...)):
     }
 
 
-#https://fastapi.tiangolo.com/tutorial/request-files/
+#https://fastapi.tiangolo.com/tutorial/request-files
 #https://learnopencv.com/how-to-find-frame-rate-or-frames-per-second-fps-in-opencv-python-cpp
-#https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/
+#https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection
 #https://pymongo.readthedocs.io/en/stable/tutorial.html#insert-documents
 
 @app.post('/api/detect/video')
