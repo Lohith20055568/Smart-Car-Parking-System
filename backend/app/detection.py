@@ -55,6 +55,11 @@ def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
                 })
     return detections
 
+#https://cocodataset.org/#home
+#https://docs.ultralytics.com/tasks/detect
+#https://docs.ultralytics.com/reference/results
+#https://docs.ultralytics.com/tasks/detect
+
 def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
     """Lightweight fallback detector for demos when YOLO is unavailable.
     It finds large vehicle-like objects using contours and works on sample/static parking images.
@@ -106,7 +111,8 @@ def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
 #References from https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
 #https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
 #https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
-#https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html
+#https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html'
+#https://numpy.org/doc/stable/
 
 def detect_vehicles(frame: np.ndarray) -> List[Dict]:
     if USE_YOLO:
@@ -141,6 +147,9 @@ def update_slot_status(slots: List[Dict], detections: List[Dict], iou_threshold:
         'occupancy_rate': round((occupied / len(slots)) * 100, 2) if slots else 0
     }
     return updated, summary
+
+#https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection
+#https://docs.opencv.org/4.x/dd/d43/tutorial_py_video_display.html
 
 def draw_results(frame: np.ndarray, slots: List[Dict], detections: List[Dict]) -> np.ndarray:
     output = cv2.resize(frame.copy(), (640, 520))
