@@ -29,6 +29,13 @@ def _load_yolo():
     except Exception:
         return None
 
+#References from https://docs.ultralytics.com 
+#https://github.com/ultralytics/ultralytics
+#https://docs.opencv.org/
+#https://docs.ultralytics.com/usage/python/
+#https://docs.ultralytics.com/tasks/detect/
+
+
 def detect_vehicles_yolo(frame: np.ndarray) -> List[Dict]:
     model = _load_yolo()
     if model is None:
@@ -95,6 +102,12 @@ def detect_vehicles_opencv(frame: np.ndarray) -> List[Dict]:
             })
     return detections
 
+
+#References from https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
+#https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
+#https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
+#https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html
+
 def detect_vehicles(frame: np.ndarray) -> List[Dict]:
     if USE_YOLO:
         yolo_detections = detect_vehicles_yolo(frame)
@@ -140,3 +153,7 @@ def draw_results(frame: np.ndarray, slots: List[Dict], detections: List[Dict]) -
         label = f"{slot['slot_id']} {slot.get('status', 'unknown')}"
         cv2.putText(output, label, (slot['x1'], slot['y1'] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
     return output
+
+#https://fastapi.tiangolo.com/
+#https://pymongo.readthedocs.io/
+
