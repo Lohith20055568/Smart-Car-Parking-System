@@ -33,7 +33,6 @@ app = FastAPI(
     version='1.0.0',
     json_encoders={ObjectId: str}
 )
-#https://fastapi.tiangolo.com/tutorial/first-steps
 
 origins = ['*'] if CORS_ORIGINS == '*' else [o.strip() for o in CORS_ORIGINS.split(',')]
 app.add_middleware(
@@ -145,12 +144,6 @@ async def detect_image(file: UploadFile = File(...)):
         'result_url': f'/api/result/{os.path.basename(out_path)}'
     }
 
-
-#https://fastapi.tiangolo.com/tutorial/request-files
-#https://learnopencv.com/how-to-find-frame-rate-or-frames-per-second-fps-in-opencv-python-cpp
-#https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection
-#https://pymongo.readthedocs.io/en/stable/tutorial.html#insert-documents
-
 @app.post('/api/detect/video')
 async def detect_video(file: UploadFile = File(...)):
     if not file.content_type or not file.content_type.startswith('video/'):
@@ -260,11 +253,6 @@ async def detect_video(file: UploadFile = File(...)):
         'result_video_url': f'/api/video-result/{os.path.basename(processed_video_path)}' if video_writer is not None else None
     }
 
-#https://github.com/TiagoPrata/fastapi-frame-stream
-#https://stackoverflow.com/questions/73294964/how-to-pass-a-video-uploaded-via-fastapi-to-opencv-videocapture
-#https://github.com/opencv/opencv/blob/4.x/doc/py_tutorials/py_gui/py_video_display/py_video_display.markdown
-#https://python-ffmpeg.readthedocs.io/en/stable
-#https://www.ffmpeg-micro.com/blog/ffmpeg-in-python
 @app.get('/api/result/{filename}')
 def result_file(filename: str):
     path = os.path.join(UPLOAD_DIR, filename)
@@ -282,16 +270,3 @@ def video_result_file(filename: str):
         raise HTTPException(404, 'Result file not found')
 
     return FileResponse(path, media_type='video/mp4')
-
-
-### *@app.get('/api/slots')
-
-@app.post('/api/detect/image')
-
-@app.post('/api/detect/video')###
-
-#https://fastapi.tiangolo.com/tutorial/path-operation-decorators
-#https://docs.pydantic.dev/latest/concepts/models
-#https://docs.opencv.org/4.x/dd/d43/tutorial_py_video_display.html
-#https://docs.python.org/3/library/time.html#time.perf_counter
-
